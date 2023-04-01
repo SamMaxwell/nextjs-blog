@@ -8,8 +8,8 @@ import { map, sortBy } from 'lodash/fp';
 
 const postsDirectory = join(process.cwd(), 'posts');
 
-export function getSortedPostsData() {
-  return asyncFlow(
+export const getSortedPostsData = () =>
+  asyncFlow(
     readdir,
     map((fileName) => {
       const id = fileName.replace(/\.md$/, '');
@@ -28,10 +28,9 @@ export function getSortedPostsData() {
     (fs) => Promise.all(fs),
     sortBy(['date']),
   )(postsDirectory);
-}
 
-export function getAllPostIds() {
-  return asyncFlow(
+export const getAllPostIds = () =>
+  asyncFlow(
     readdir,
     map((fileName) => ({
       params: {
@@ -39,10 +38,9 @@ export function getAllPostIds() {
       },
     })),
   )(postsDirectory);
-}
 
-export function getPostData(id) {
-  return asyncFlow(
+export const getPostData = (id) =>
+  asyncFlow(
     (fullPath) => readFile(fullPath, 'utf8'),
     matter,
     (matterResult) => ({ id, ...matterResult.data, content: matterResult.content }),
@@ -55,4 +53,3 @@ export function getPostData(id) {
         }),
       )(),
   )(join(postsDirectory, `${id}.md`));
-}

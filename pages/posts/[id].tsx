@@ -17,19 +17,19 @@ export const getStaticPaths: GetStaticPaths = () =>
     fallback: false,
   }))();
 
-export default function Post({ postData: { title, id, date, contentHtml } }) {
-  return (
-    <Layout home={false}>
-      <Head>
-        <title>{title}</title>
-      </Head>
-      <article>
-        <h1 className={utilStyles.headingXl}>{title}</h1>
-        <div className={utilStyles.lightText}>
-          <Date dateString={date} />
-        </div>
-        <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
-      </article>
-    </Layout>
-  );
-}
+const Post = ({ postData: { title, id, date, contentHtml } }) => (
+  <Layout home={false}>
+    <Head>
+      <title>{title}</title>
+    </Head>
+    <article>
+      <h1 className={utilStyles.headingXl}>{title}</h1>
+      <div className={utilStyles.lightText}>
+        <Date dateString={date} />
+      </div>
+      <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
+    </article>
+  </Layout>
+);
+
+export default Post;
