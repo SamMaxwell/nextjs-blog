@@ -4,23 +4,22 @@ import { getAllPostIds, getPostData } from '../../lib/posts';
 import asyncFlow from 'asyncpipe';
 import Date from '../../components/date';
 import utilStyles from '../../styles/utils.module.css';
+import { GetStaticProps, GetStaticPaths } from 'next';
 
-export function getStaticProps({ params }) {
-  return asyncFlow(getPostData, (postData) => ({
+export const getStaticProps: GetStaticProps = ({ params }) =>
+  asyncFlow(getPostData, (postData) => ({
     props: { postData },
   }))(params.id);
-}
 
-export function getStaticPaths() {
-  return getAllPostIds().then((paths) => ({
+export const getStaticPaths: GetStaticPaths = () =>
+  asyncFlow(getAllPostIds, (paths) => ({
     paths,
     fallback: false,
-  }));
-}
+  }))();
 
 export default function Post({ postData: { title, id, date, contentHtml } }) {
   return (
-    <Layout>
+    <Layout home={false}>
       <Head>
         <title>{title}</title>
       </Head>

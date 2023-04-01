@@ -5,7 +5,7 @@ import Alert from '../../components/alert'
 
 export default function FirstPost() {
   return (
-    <Layout>
+    <Layout home>
       <Head>
         <title>First Post</title>
       </Head>

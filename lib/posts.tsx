@@ -4,32 +4,36 @@ import { join } from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import { map, sortBy } from 'lodash/fp';
 
 const postsDirectory = join(process.cwd(), 'posts');
 
 export function getSortedPostsData() {
   return asyncFlow(
     readdir,
-    (fileNames) =>
-      fileNames.map((fileName) => {
-        const id = fileName.replace(/\.md$/, '');
-        const fullPath = join(postsDirectory, fileName);
-        return readFile(fullPath, 'utf8').then((fileContents) => {
+    map((fileName) => {
+      const id = fileName.replace(/\.md$/, '');
+      const fullPath = join(postsDirectory, fileName);
+      return asyncFlow(
+        () => readFile(fullPath, 'utf8'),
+        (fileContents) => {
           const matterResult = matter(fileContents);
           return {
             id,
             ...matterResult.data,
           };
-        });
-      }),
+        },
+      )();
+    }),
     (fs) => Promise.all(fs),
-    (allPostsData) => allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1)),
+    sortBy(['date']),
   )(postsDirectory);
 }
 
 export function getAllPostIds() {
-  return asyncFlow(readdir, (fileNames) =>
-    fileNames.map((fileName) => ({
+  return asyncFlow(
+    readdir,
+    map((fileName) => ({
       params: {
         id: fileName.replace(/\.md$/, ''),
       },
@@ -43,12 +47,12 @@ export function getPostData(id) {
     matter,
     (matterResult) => ({ id, ...matterResult.data, content: matterResult.content }),
     ({ content, ...rest }) =>
-      remark()
-        .use(html)
-        .process(content)
-        .then((processedContent) => ({
+      asyncFlow(
+        () => remark().use(html).process(content),
+        (processedContent) => ({
           ...rest,
           contentHtml: processedContent.toString(),
-        })),
+        }),
+      )(),
   )(join(postsDirectory, `${id}.md`));
 }
