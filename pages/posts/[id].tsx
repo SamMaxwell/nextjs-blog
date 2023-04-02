@@ -6,19 +6,17 @@ import Date from '../../components/date';
 import utilStyles from '../../styles/utils.module.css';
 import { GetStaticProps, GetStaticPaths } from 'next';
 
-export const getStaticProps: GetStaticProps = ({ params }) =>
-  asyncFlow(getPostData, (postData) => ({
-    props: { postData },
-  }))(params.id);
+const toProps = (postData: Object) => ({ props: { postData } });
 
-export const getStaticPaths: GetStaticPaths = () =>
-  asyncFlow(getAllPostIds, (paths) => ({
-    paths,
-    fallback: false,
-  }))();
+const toPaths = (paths: [String]) => ({ paths, fallback: false });
+
+export const getStaticProps: GetStaticProps = ({ params }) =>
+  asyncFlow(getPostData, toProps)(params.id);
+
+export const getStaticPaths: GetStaticPaths = () => asyncFlow(getAllPostIds, toPaths)();
 
 const Post = ({ postData: { title, id, date, contentHtml } }) => (
-  <Layout home={false}>
+  <Layout>
     <Head>
       <title>{title}</title>
     </Head>

@@ -7,7 +7,7 @@ import Link from 'next/link';
 const name = 'Sam Maxwell';
 export const siteTitle = 'Next.js Sample Website';
 
-const Layout = ({ children, home }) => (
+const Layout = ({ children, home = false }) => (
   <div className={styles.container}>
     <Head>
       <link rel="icon" href="/favicon.ico" />

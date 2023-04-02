@@ -7,11 +7,10 @@ import Date from '../components/date';
 import { GetStaticProps } from 'next';
 import asyncFlow from 'asyncpipe';
 
+const toProps = (propName: string) => (propValue: any) => ({ props: { [propName]: propValue } });
+
 export const getStaticProps: GetStaticProps = (context) =>
-  asyncFlow(
-    () => getSortedPostsData(),
-    (allPostsData) => ({ props: { allPostsData } }),
-  )();
+  asyncFlow(getSortedPostsData, toProps('allPostsData'))();
 
 const Home = ({ allPostsData }) => (
   <Layout home>
